@@ -14,9 +14,10 @@ class MyRunTestTask extends DefaultTask {
     @InputFile modelFullPathName
     @InputFile testFullPathName
     @Input String tolerance
+    @Input String verbose
     @OutputDirectory File testRunPath
-	File buildHistoryFile = new File("${project.rootDir}/build-history/build-results-"+getDate()+".txt")
 
+        File buildHistoryFile = new File("${project.rootDir}/build-history/build-results-"+getDate()+".txt")
 	public String getDate() {
 	    return new Date().format('yyyy-MM-dd-HHmmss')
 	}
@@ -29,10 +30,11 @@ class MyRunTestTask extends DefaultTask {
 	              environment "STD_EXE", modelFullPathName.getAbsolutePath()
 	              workingDir testRunPath
 	              executable = testFullPathName.getAbsolutePath() 
-	              def argsList = [tolerance, "REPO" ]
+	              def argsList = [tolerance, "REPO",verbose ]
 	              args = argsList
 	              standardOutput = os
 	         }
+                 buildHistoryFile.getParentFile().mkdirs()
 	         buildHistoryFile.createNewFile()
          	 buildHistoryFile.write os.toString()
              println os.toString()

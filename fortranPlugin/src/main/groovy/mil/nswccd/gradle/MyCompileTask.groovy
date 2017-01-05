@@ -18,6 +18,8 @@ class MyCompileTask extends DefaultTask {
     @Input String fortranCompiler
     @Input String cCompiler
     @Input String inclDir
+    @Input String STAPLE
+    @Input String x64
     @InputFiles 
        def getFiles() {
           return project.fileTree(dir: srcDir, includes: includeFiles, excludes: excludeFiles)
@@ -32,15 +34,24 @@ class MyCompileTask extends DefaultTask {
           String pathName = it.file.getParentFile()
           def compiler = fortranCompiler
           def  compileFlags = fortranCompileFlags
-          if (fileExt.equals('c')) {
+          if (fileExt.equals('c') || fileExt.equals('cpp')) {
             compiler = cCompiler
             compileFlags = cCompileFlags
           } 
           project.exec {
             workingDir = pathName 
             executable = compiler
-            def argsList = ["-o", "${outputDir}/${baseName}.o", "-c", "${pathName}/${baseName}.${fileExt}", "-DGFORTRAN", 
-                       "-DSTAPLE_BUILD", "-I${project.projectDir}/${inclDir}"]
+            def argsList = ["-o", "${outputDir}/${baseName}.o", "-c", "${pathName}/${baseName}.${fileExt}", 
+                        "-I${project.projectDir}/${inclDir}"]
+            if (compiler == 'gfortran') {
+              argsList = argsList +  "-DGFORTRAN"
+           }
+            if (STAPLE == 'true') {
+                argsList = argsList + "-DSTAPLE_BUILD"
+            }
+            if (x64 == 'true') {
+                argsList = argsList + "-m64"
+            }
             argsList = argsList + compileFlags
             args = argsList 
           }

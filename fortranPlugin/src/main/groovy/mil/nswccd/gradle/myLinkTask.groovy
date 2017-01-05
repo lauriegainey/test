@@ -12,6 +12,7 @@ import org.gradle.api.tasks.incremental.IncrementalTaskInputs
 
 class MyLinkTask extends DefaultTask {
     @Input String linker
+    @Input String x64
     @Input List<String> linkFlags
     @Input String exeName
     @InputDirectory objDir 
@@ -28,6 +29,9 @@ class MyLinkTask extends DefaultTask {
           workingDir binPath
           executable = linker
           def argsList = ["-o", exeName, "-DGFORTRAN", "-DSTAPLE_BUILD"]
+          if (x64 == 'true') {
+              argsList = argsList + "-m64"
+          }
           argsList = argsList + getFiles() + linkFlags
           args = argsList 
         }
